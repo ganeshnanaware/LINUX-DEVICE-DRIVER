@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/Q1.mod := printf '%s\n'   Q1.o | awk '!x[$$0]++ { print("/home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/"$$0) }' > /home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/Q1.mod

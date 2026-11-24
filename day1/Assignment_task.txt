@@ -1,0 +1,27 @@
+Problem statement: 1 
+
+Write a Linux kernel module named hello_student.c 
+that accepts a student's name as a parameter during module insertion.
+Requirements:
+Accept a string parameter named student_name.
+Default value must be "World".
+Print Hello <student_name>, Welcome to Linux Kernel Programming! when the module loads.
+
+
+Problem Statement: 2
+Write a Linux kernel module named marks_analyzer.c 
+that accepts an array of student marks from user space and calculates statistics.
+This assignment introduces array parameters, an important extension of module_param().
+Parameter Type Description
+marks Integer array Marks of up to 5 students
+passing_marks Integer Minimum marks required to pass; default 40
+
+Requirements:
+1. Accept up to five marks using module_param_array().
+2. Determine how many marks were supplied.
+3. Validate that each mark is between 0 and 100.
+4. Ensure at least one mark is supplied.
+5. Calculate the total marks, average, highest mark and lowest mark.
+6. Count how many students passed using passing_marks.
+7. Reject invalid inputs with -EINVAL.
+9. Expose parameters through sysfs with read-only permissions.

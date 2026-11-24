@@ -1,0 +1,1 @@
+savedcmd_/home/desd/DESD_Aug_2026/5_ldd/day1/hello_world.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/desd/DESD_Aug_2026/5_ldd/day1/hello_world.ko /home/desd/DESD_Aug_2026/5_ldd/day1/hello_world.o /home/desd/DESD_Aug_2026/5_ldd/day1/hello_world.mod.o

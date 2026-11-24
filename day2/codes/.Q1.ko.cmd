@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/Q1.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/Q1.ko /home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/Q1.o /home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/Q1.mod.o

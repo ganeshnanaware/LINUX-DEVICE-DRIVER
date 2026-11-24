@@ -1,0 +1,1 @@
+savedcmd_/home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/hello_student.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/hello_student.ko /home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/hello_student.o /home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/hello_student.mod.o

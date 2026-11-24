@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/code2/modules.order := {   echo /home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/code2/Q1.o; :; } > /home/desd/Desktop/DESD_Aug_2026/5_ldd/day2/codes/code2/modules.order

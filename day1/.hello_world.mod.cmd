@@ -1,0 +1,1 @@
+savedcmd_/home/desd/DESD_Aug_2026/5_ldd/day1/hello_world.mod := printf '%s\n'   hello_world.o | awk '!x[$$0]++ { print("/home/desd/DESD_Aug_2026/5_ldd/day1/"$$0) }' > /home/desd/DESD_Aug_2026/5_ldd/day1/hello_world.mod

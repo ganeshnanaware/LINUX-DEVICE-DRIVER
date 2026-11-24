@@ -1,0 +1,32 @@
+Q1. TCP Client–Server: String Processing
+Write two C programs using TCP sockets: a server and a client.
+The client sends a string to the server. The server must process the string and return the following information:
+
+Total number of vowels.
+
+Total number of consonants.
+
+Reverse of the original string.
+
+Whether the string is a palindrome (case-insensitive).
+
+Sample Input (Client)
+Enter string: Madam
+
+Expected Output (Client)
+Vowels: 2
+Consonants: 3
+Reversed String: madaM
+Palindrome: YES
+
+Requirements
+
+Use socket(), bind(), listen(), accept(), connect(), send() and recv().
+
+Server should handle multiple client requests sequentially.
+
+Properly handle client disconnection.
+
+Define a simple protocol to identify the end of each request and response.
+
+Handle partial send() and recv() operations.

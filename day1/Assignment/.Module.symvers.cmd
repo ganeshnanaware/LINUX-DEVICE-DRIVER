@@ -1,0 +1,1 @@
+savedcmd_/home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/Module.symvers -T /home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/modules.order -i Module.symvers -e 

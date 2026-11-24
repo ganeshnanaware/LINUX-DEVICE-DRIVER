@@ -1,0 +1,1 @@
+savedcmd_/home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/Q2/marks_analyzer.mod := printf '%s\n'   marks_analyzer.o | awk '!x[$$0]++ { print("/home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/Q2/"$$0) }' > /home/desd/DESD_Aug_2026/5_ldd/day1/Assignment/Q2/marks_analyzer.mod
