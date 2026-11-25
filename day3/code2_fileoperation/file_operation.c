@@ -4,7 +4,7 @@
 #include <linux/fs.h>			//file objects
 #include <linux/cdev.h>			//struct cdev, cdev_init(), cdev_add()
 #include <linux/device.h>		//Class create, device create
-#include <linux/err.h >			//IS_ERR, PTR_ERR
+#include <linux/err.h>			//IS_ERR, PTR_ERR
 #include <linux/container_of.h>		//Recover device object address
 #include <linux/slab.h>			//Allocate free memory
 #include <linux/uaccess.h>		//copy across the userspace
@@ -41,7 +41,7 @@ static int my_open(struct inode *inode, struct file *file)
 
 	static const char initial[] = "hello from kernel...!!!!\n";
 
-	dev = container_of((inode->i_cdev, struct demo_device, cdev);
+	dev = container_of(inode->i_cdev, struct demo_device, cdev);
 	
 	if(file->f_flags & (O_APPEND | O_TRUNC))
 	{
@@ -59,9 +59,9 @@ static int my_open(struct inode *inode, struct file *file)
        	return -ENOMEM;
        }       
 	
-       memcpy(s->data, inital, sizof(inital)-1);
+       memcpy(s->data, initial, sizeof(initial)-1);
 
-       s->length = sizeof(inital)-1;
+       s->length = sizeof(initial)-1;
 
        s->owner = dev;
 
@@ -70,6 +70,66 @@ static int my_open(struct inode *inode, struct file *file)
        return 0;
 }
 
+static int my_release(struct inode *inode, struct file *file)
+{
+	kfree(file->private_data);
+	file->private_data = NULL;
+	return 0;
+}
+
+static ssize_t my_read(struct file *file, char __user *buf, size_t count, loff_t*ppos)
+{
+	struct session *s = file->private_data;
+	size_t pos, available, wanted, copied;
+	
+	if(!count)
+		return 0;
+	if(*ppos <0)
+		return -EINVAL;
+	if(*ppos > s->length)
+		return 0;
+	pos = (size_t)*ppos;
+	available =  s->length - pos;
+	wanted = min(count,available);
+		copied = copy_to_user(buf, s->data+pos, wanted);
+	if(copied)
+		return -EFAULT;
+	*ppos += wanted;
+	return wanted;
+}
+
+
+static ssize_t my_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+{
+	struct session *s = file->private_data;
+	
+	u8 temporary[CAPACITY];
+	
+	size_t pos, available, wanted, copied;
+	
+	if(file->f_flags & O_APPEND)
+		return -EINVAL;
+	if(!count)
+		return 0;
+	if(*ppos <0)
+		return -EINVAL;
+	if(*ppos >= CAPACITY)
+		return -ENOSPC;
+	
+	pos = (size_t)*ppos;
+	available = CAPACITY - pos;
+	wanted = min(count,available);
+		copied = copy_from_user(temporary, buf, wanted);
+	if(copied)
+		return -EFAULT;
+
+	memcpy(s->data+pos, temporary, wanted);
+	pr_info("beginner: wrote %zu bytes at pos %zu : %.*s\n", wanted, pos, (int)wanted, (char *)temporary);
+	*ppos += wanted;
+	if(*ppos > s->length)
+		s->length = *ppos;
+	return wanted;
+}
 
 
 
@@ -79,8 +139,8 @@ static const struct file_operations demo_operation = {
 	.release = my_release,
 	.read = my_read,
 	.write = my_write,
-	.llseek = my_seek,
-	.unlocked_ioctl = my_ioctl,
+	//.llseek = my_seek,
+	//.unlocked_ioctl = my_ioctl,
 };
 
 static int __init my_init(void)
@@ -93,10 +153,9 @@ static int __init my_init(void)
 	ret = alloc_chrdev_region(&demo.number, 0, 1,DEVICE_NAME);
 
 	if(ret < 0) return ret;
-
 	/*Initalize cdev structure and associate it with the drivers file operation structure. It does not register the character device only initalize it */
 
-	cdev_init(&demo.cdev, &demo_operations);
+	cdev_init(&demo.cdev, &demo_operation);
 	demo.cdev.owner = THIS_MODULE;
 
 	/*Register the initalized character device with kernel character device subsystem and associates it with a range of device number*/
@@ -138,10 +197,9 @@ err_numbers:
 
 }
 
-
 static void __exit my_exit(void)
 {
-	device_destroy(device_class, device_number);
+	device_destroy(demo.class, demo.number);
 	class_destroy(demo.class);
 	cdev_del(&demo.cdev);
 	unregister_chrdev_region(demo.number, 1);

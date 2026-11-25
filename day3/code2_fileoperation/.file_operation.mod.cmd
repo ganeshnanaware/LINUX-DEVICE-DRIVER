@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day3/code2_fileoperation/file_operation.mod := printf '%s\n'   file_operation.o | awk '!x[$$0]++ { print("/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day3/code2_fileoperation/"$$0) }' > /home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day3/code2_fileoperation/file_operation.mod

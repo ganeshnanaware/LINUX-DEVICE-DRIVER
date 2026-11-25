@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day3/code2_fileoperation/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day3/code2_fileoperation/Module.symvers -T /home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day3/code2_fileoperation/modules.order -i Module.symvers -e 
