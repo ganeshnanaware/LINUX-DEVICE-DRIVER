@@ -131,7 +131,35 @@ static ssize_t my_write(struct file *file, const char __user *buf, size_t count,
 	return wanted;
 }
 
+static loff_t my_seek(struct file *file, loff_t offset, int whence)
+{
+	struct session *s = file->private_data;	//get this open's buffer
+	loff_t max_pos = CAPACITY-1;
+	loff_t base;
+	loff_t new_pos;				//position after the seek
 
+	switch(whence)
+	{
+		case SEEK_SET:			//measure from the start of the buffer
+			base=0;
+			break;
+		case SEEK_CUR:			//measure from the current position
+			base = file->f_pos;
+			break;
+		case SEEK_END:			//measure from the end of valid data
+			base = s->length;
+			break;
+		default:			//unknown whence value
+			return -EINVAL;
+	}
+
+	if(offset < -base || offset > max_pos - base)	//before the start or past the buffer
+		return -EINVAL;
+	
+	new_pos = base + offset;
+	file->f_pos = new_pos;		//next read or write starts here
+	return new_pos;			//lseek returns the new position
+}
 
 static const struct file_operations demo_operation = {
 	.owner = THIS_MODULE,
@@ -139,7 +167,7 @@ static const struct file_operations demo_operation = {
 	.release = my_release,
 	.read = my_read,
 	.write = my_write,
-	//.llseek = my_seek,
+	.llseek = my_seek,
 	//.unlocked_ioctl = my_ioctl,
 };
 

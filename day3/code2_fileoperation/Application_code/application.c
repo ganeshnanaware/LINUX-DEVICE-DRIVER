@@ -1,6 +1,6 @@
 /*
 Question : Write a user space application to test the character device driver
-           /dev/beginner (open, read, write, close).
+           /dev/beginner using open, read, write, lseek and close.
 */
 
 #include <stdio.h>
@@ -8,6 +8,7 @@ Question : Write a user space application to test the character device driver
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 #define DEVICE "/dev/beginner"
 #define CAPACITY 64
@@ -16,7 +17,10 @@ int main()
 {
 	int fd;
 	int choice;
+	int whence;
 	int ret;
+	off_t offset;
+	off_t pos;
 	char buf[CAPACITY + 1];
 	char input[CAPACITY + 1];
 	char line[16];
@@ -32,7 +36,8 @@ int main()
 
 	while(1)
 	{
-		printf("\n1. Read\n2. Write\n3. Close and open again\n4. Exit\n");
+		printf("\n1. Read\n2. Write\n3. Seek\n4. Show position\n");
+		printf("5. Close and open again\n6. Exit\n");
 		printf("Enter choice : ");
 
 		if(fgets(line, sizeof(line), stdin) == NULL)
@@ -76,6 +81,51 @@ int main()
 		}
 		else if(choice == 3)
 		{
+			printf("1. From start\n2. From current position\n3. From end of data\n");
+			printf("Enter whence : ");
+
+			if(fgets(line, sizeof(line), stdin) == NULL)
+				continue;
+
+			ret = atoi(line);
+
+			if(ret == 1)
+				whence = SEEK_SET;
+			else if(ret == 2)
+				whence = SEEK_CUR;
+			else if(ret == 3)
+				whence = SEEK_END;
+			else
+			{
+				printf("invalid whence\n");
+				continue;
+			}
+
+			printf("Enter offset : ");
+
+			if(fgets(line, sizeof(line), stdin) == NULL)
+				continue;
+
+			offset = atol(line);
+
+			pos = lseek(fd, offset, whence);
+
+			if(pos < 0)
+				perror("lseek");
+			else
+				printf("position moved to %ld\n", (long)pos);
+		}
+		else if(choice == 4)
+		{
+			pos = lseek(fd, 0, SEEK_CUR);
+
+			if(pos < 0)
+				perror("lseek");
+			else
+				printf("current position = %ld\n", (long)pos);
+		}
+		else if(choice == 5)
+		{
 			close(fd);
 
 			fd = open(DEVICE, O_RDWR);
@@ -87,7 +137,7 @@ int main()
 
 			printf("device reopened, new session started\n");
 		}
-		else if(choice == 4)
+		else if(choice == 6)
 		{
 			break;
 		}
