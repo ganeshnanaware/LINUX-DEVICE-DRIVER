@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day6/code_timer/my_timer_code.mod := printf '%s\n'   my_timer_code.o | awk '!x[$$0]++ { print("/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day6/code_timer/"$$0) }' > /home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day6/code_timer/my_timer_code.mod

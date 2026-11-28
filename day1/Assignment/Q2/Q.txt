@@ -1,4 +1,4 @@
-/***
+/***::::wq
 
 Problem Statement:2
 Write a Linux kernel module named marks_analyzer.c 

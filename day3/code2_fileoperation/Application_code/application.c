@@ -1,6 +1,6 @@
 /*
 Question : Write a user space application to test the character device driver
-           /dev/beginner using open, read, write, lseek and close.
+           /dev/beginner using open, read, write, lseek, ioctl and close.
 */
 
 #include <stdio.h>
@@ -9,9 +9,17 @@ Question : Write a user space application to test the character device driver
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/ioctl.h>
 
 #define DEVICE "/dev/beginner"
 #define CAPACITY 64
+
+/* ioctl commands, must be same as in the driver */
+#define BEGINNER_MAGIC		'B'
+#define BEGINNER_CLEAR		_IO(BEGINNER_MAGIC, 0)
+#define BEGINNER_GET_LENGTH	_IOR(BEGINNER_MAGIC, 1, unsigned int)
+#define BEGINNER_SET_LENGTH	_IOW(BEGINNER_MAGIC, 2, unsigned int)
+#define BEGINNER_GET_CAPACITY	_IOR(BEGINNER_MAGIC, 3, unsigned int)
 
 int main()
 {
@@ -19,6 +27,7 @@ int main()
 	int choice;
 	int whence;
 	int ret;
+	unsigned int value;
 	off_t offset;
 	off_t pos;
 	char buf[CAPACITY + 1];
@@ -37,7 +46,10 @@ int main()
 	while(1)
 	{
 		printf("\n1. Read\n2. Write\n3. Seek\n4. Show position\n");
-		printf("5. Close and open again\n6. Exit\n");
+		printf("5. Close and open again\n");
+		printf("6. ioctl : Clear buffer\n7. ioctl : Get length\n");
+		printf("8. ioctl : Set length\n9. ioctl : Get capacity\n");
+		printf("10. Exit\n");
 		printf("Enter choice : ");
 
 		if(fgets(line, sizeof(line), stdin) == NULL)
@@ -138,6 +150,49 @@ int main()
 			printf("device reopened, new session started\n");
 		}
 		else if(choice == 6)
+		{
+			ret = ioctl(fd, BEGINNER_CLEAR);
+
+			if(ret < 0)
+				perror("ioctl CLEAR");
+			else
+				printf("buffer cleared\n");
+		}
+		else if(choice == 7)
+		{
+			ret = ioctl(fd, BEGINNER_GET_LENGTH, &value);
+
+			if(ret < 0)
+				perror("ioctl GET_LENGTH");
+			else
+				printf("valid data length = %u\n", value);
+		}
+		else if(choice == 8)
+		{
+			printf("Enter new length (0 to %d) : ", CAPACITY);
+
+			if(fgets(line, sizeof(line), stdin) == NULL)
+				continue;
+
+			value = (unsigned int)atoi(line);
+
+			ret = ioctl(fd, BEGINNER_SET_LENGTH, &value);
+
+			if(ret < 0)
+				perror("ioctl SET_LENGTH");
+			else
+				printf("length set to %u\n", value);
+		}
+		else if(choice == 9)
+		{
+			ret = ioctl(fd, BEGINNER_GET_CAPACITY, &value);
+
+			if(ret < 0)
+				perror("ioctl GET_CAPACITY");
+			else
+				printf("buffer capacity = %u\n", value);
+		}
+		else if(choice == 10)
 		{
 			break;
 		}

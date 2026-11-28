@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/PRACTICE/Code_Hello/hello_student.mod := printf '%s\n'   hello_student.o | awk '!x[$$0]++ { print("/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/PRACTICE/Code_Hello/"$$0) }' > /home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/PRACTICE/Code_Hello/hello_student.mod

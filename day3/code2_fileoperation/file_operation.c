@@ -1,3 +1,8 @@
+/*
+ * Question: Add ioctl code in the beginner character driver
+ * (manual cdev registration and file operations).
+ */
+
 #include <linux/module.h>		//module entry point and access point
 #include <linux/kernel.h>		//
 #include <linux/init.h>			//
@@ -7,11 +12,20 @@
 #include <linux/err.h>			//IS_ERR, PTR_ERR
 #include <linux/container_of.h>		//Recover device object address
 #include <linux/slab.h>			//Allocate free memory
-#include <linux/uaccess.h>		//copy across the userspace
+#include <linux/uaccess.h>		//copy across the userspace, get_user, put_user
+#include <linux/ioctl.h>		//_IO, _IOR, _IOW macros
 
 #define DEVICE_NAME "beginner"
 #define CLASS_NAME "beginner_class"
 #define CAPACITY 64
+
+/* ioctl commands. User space program must use the same definitions */
+#define BEGINNER_MAGIC		'B'
+#define BEGINNER_CLEAR		_IO(BEGINNER_MAGIC, 0)			//clear buffer, length becomes 0
+#define BEGINNER_GET_LENGTH	_IOR(BEGINNER_MAGIC, 1, unsigned int)	//read valid data length
+#define BEGINNER_SET_LENGTH	_IOW(BEGINNER_MAGIC, 2, unsigned int)	//change valid data length
+#define BEGINNER_GET_CAPACITY	_IOR(BEGINNER_MAGIC, 3, unsigned int)	//read buffer capacity
+#define BEGINNER_MAX_NR		3					//highest command number
 
 static bool fail_open;
 
@@ -161,14 +175,65 @@ static loff_t my_seek(struct file *file, loff_t offset, int whence)
 	return new_pos;			//lseek returns the new position
 }
 
+static long my_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	struct session *s = file->private_data;			//get this open's buffer
+	unsigned int __user *uptr = (unsigned int __user *)arg;	//arg is a user space address
+	unsigned int value;					//value copied to/from user
+
+	if(_IOC_TYPE(cmd) != BEGINNER_MAGIC)		//command is not for this driver
+		return -ENOTTY;
+	if(_IOC_NR(cmd) > BEGINNER_MAX_NR)		//command number out of range
+		return -ENOTTY;
+
+	switch(cmd)
+	{
+		case BEGINNER_CLEAR:			//empty the buffer
+			memset(s->data, 0, CAPACITY);
+			s->length = 0;
+			pr_info("beginner: ioctl CLEAR\n");
+			break;
+
+		case BEGINNER_GET_LENGTH:		//kernel -> user
+			value = s->length;
+			if(put_user(value, uptr))
+				return -EFAULT;
+			pr_info("beginner: ioctl GET_LENGTH %u\n", value);
+			break;
+
+		case BEGINNER_SET_LENGTH:		//user -> kernel
+			if(get_user(value, uptr))
+				return -EFAULT;
+			if(value > CAPACITY)
+				return -EINVAL;
+			if(value > s->length)		//growing, so zero the new part
+				memset(s->data + s->length, 0, value - s->length);
+			s->length = value;
+			pr_info("beginner: ioctl SET_LENGTH %u\n", value);
+			break;
+
+		case BEGINNER_GET_CAPACITY:		//kernel -> user
+			value = CAPACITY;
+			if(put_user(value, uptr))
+				return -EFAULT;
+			pr_info("beginner: ioctl GET_CAPACITY %u\n", value);
+			break;
+
+		default:				//unknown command
+			return -ENOTTY;
+	}
+
+	return 0;
+}
+
 static const struct file_operations demo_operation = {
 	.owner = THIS_MODULE,
 	.open = my_open,
 	.release = my_release,
 	.read = my_read,
 	.write = my_write,
-	.llseek = my_seek,
-	//.unlocked_ioctl = my_ioctl,
+	//.llseek = my_seek,
+	.unlocked_ioctl = my_ioctl,
 };
 
 static int __init my_init(void)
@@ -241,10 +306,3 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Manual cdev registration and file operation implementaion");
 
 MODULE_AUTHOR("GANESHA");
-
-
-
-
-
-
-

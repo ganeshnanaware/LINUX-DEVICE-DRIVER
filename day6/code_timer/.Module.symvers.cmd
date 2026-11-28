@@ -1,0 +1,1 @@
+savedcmd_/home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day6/code_timer/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day6/code_timer/Module.symvers -T /home/desd/Desktop/DESD_Aug_2026/5_ldd/LINUX-DEVICE-DRIVER/day6/code_timer/modules.order -i Module.symvers -e 
